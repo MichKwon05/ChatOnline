@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Online</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card border-warning mb-3">
+            <div class="card-header text-white bg-warning">
+                <h4 class="card-title">Chat Online</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Usuario: {{nameUser}}</p>
+                <p class="card-text">Clave: {{typeEncryption}}</p>
+
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="send-input" aria-label="Recipient's username"
+                        aria-describedby="button-addon1">
+                    <button class="btn btn-info" type="button" id="button-addon1"
+                        onclick="enviarMensaje()">Enviar</button>
+                </div>
+
+                <div id="cifrados-container">
+                    <!-- Aquí se mostrarán los mensajes cifrados -->
+                </div>
+                <div id="descifrados-container">
+                    <!-- Aquí se mostrarán los mensajes descifrados -->
+                </div>
+                <form id="descifrar-form">
+                    <input type="text" class="form-control" id="clave-input" placeholder="Clave de descifrado">
+                    <button class="btn btn-info" type="button" id="button-addon2"
+                        onclick="descifrarMensajes()">Descifrar</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function enviarMensaje() {
+            var message = document.getElementById('send-input').value;
+
+            if (message.trim() !== '') {
+                socket.emit('message', { 'message': message });
+                document.getElementById('send-input').value = ''; // Limpiar el campo después de enviar el mensaje
+            }
+        }
+        function descifrarMensajes() {
+            var mensajeCifrado = document.getElementById('cifrados-container').innerText; // Obtén el mensaje cifrado del contenedor
+            var claveDescifrado = document.getElementById('clave-input').value;
+
+            if (mensajeCifrado.trim() !== '' && claveDescifrado.trim() !== '') {
+                socket.emit('descifrar', { 'mensajeCifrado': mensajeCifrado, 'claveDescifrado': claveDescifrado });
+            }
+        }
+
+        socket.on('message', function (data) {
+            var cifradosContainer = document.getElementById('cifrados-container');
+            var cifradoElement = document.createElement('p');
+            cifradoElement.innerText = data.cifrado;
+            cifradosContainer.appendChild(cifradoElement);
+        });
+
+        socket.on('descifrado', function (data) {
+            var descifradosContainer = document.getElementById('descifrados-container');
+            var descifradoElement = document.createElement('p');
+            descifradoElement.innerText = data.descifrado;
+            descifradosContainer.appendChild(descifradoElement);
+        });
+
+        function obtenerMensajeDescifrado(mensaje) {
+            // Buscar la primera aparición de ': ' y tomar todo después de eso
+            var indexInicio = mensaje.indexOf(': ') + 2;
+            return mensaje.substring(indexInicio).trim();
+        }
+    </script>
+</body>
+
+</html>

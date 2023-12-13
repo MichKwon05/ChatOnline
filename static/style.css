@@ -1,0 +1,20 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: start;
+}
+
+.card {
+    max-width: 20rem;
+    margin: 0 auto; /* Esto centra horizontalmente la tarjeta */
+}
+
+.input-group {
+    margin-top: 20px;
+}

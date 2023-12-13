@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/minty/bootstrap.min.css"
+        integrity="sha384-H4X+4tKc7b8s4GoMrylmy2ssQYpDHoqzPa9aKXbDwPoPUA3Ra8PA5dGzijN+ePnH" crossorigin="anonymous">
+    <title>Index</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <form action="{{ url_for('chatOnline') }}" method="post">
+        <div class="container">
+            <div class="card border-info mb-3" style="max-width: 20rem;">
+            <div class="card-header text-white bg-info">
+                <h1 class="card-title">Bienvenido al chat</h1>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="nameUser" class="form-label mt-4">Usuario:</label>
+                    <input type="text" id="nameUser" name="nameUser" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="typeEncryption" class="form-label mt-4">Tipo de Cifrado:</label>
+                    <input type="text" id="typeEncryption" name="typeEncryption" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-info">Ingresar </button>
+            </div>
+        </div> 
+        </div>
+    </form>
+</body>
+</html>
