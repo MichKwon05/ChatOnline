@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+    <!-- Configuración inicial del documento -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Online</title>
@@ -9,78 +10,158 @@
 </head>
 
 <body>
+    <!-- Contenedor principal -->
     <div class="container">
-        <div class="card border-warning mb-3">
-            <div class="card-header text-white bg-warning">
-                <h4 class="card-title">Chat Online</h4>
+        <div class="row">
+            <!-- Primera columna (Chat del Usuario 1) -->
+            <div class="col-md-6">
+                <div class="card border-warning mb-3">
+                    <div class="card-header text-white bg-warning">
+                        <!-- Título del chat con el nombre del usuario -->
+                        <h4 class="card-title">Chat {{nameUser}}</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Información del usuario y tipo de cifrado -->
+                        <p class="card-text">Usuario: {{nameUser}}</p>
+                        <p class="card-text">Clave: {{typeEncryption}}</p>
+                        <!-- Contenedores para mostrar mensajes cifrados y descifrados del primer chat -->
+                        <div id="cifrados-container-1">
+                            <!-- Aquí se mostrarán los mensajes cifrados del primer chat -->
+                        </div>
+                        <div id="descifrados-container-1">
+                            <!-- Aquí se mostrarán los mensajes descifrados del primer chat -->
+                        </div>
+
+                        <!-- Entrada para enviar mensajes y botón de enviar -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="send-input" aria-label="Recipient's username"
+                                aria-describedby="button-addon1">
+                            <button class="btn btn-info" type="button" id="button-addon1"
+                                onclick="enviarMensaje()">Enviar</button>
+                            <!-- Entrada para descifrar mensajes y botón de descifrar -->
+                        </div>
+                        <div class="input-group mb-3" id="descifrar-form-1">
+                            <input type="text" class="form-control" id="clave-input-1" aria-label="Recipient key"
+                                aria-describedby="button-addon2">
+                            <button class="btn btn-info" type="button" id="button-addon2"
+                                onclick="descifrarMensajes1()">Descifrar</button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <p class="card-text">Usuario: {{nameUser}}</p>
-                <p class="card-text">Clave: {{typeEncryption}}</p>
 
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="send-input" aria-label="Recipient's username"
-                        aria-describedby="button-addon1">
-                    <button class="btn btn-info" type="button" id="button-addon1"
-                        onclick="enviarMensaje()">Enviar</button>
-                </div>
+            <!-- Segunda columna (Chat del Usuario 2) -->
+            <div class="col-md-6">
+                <div class="card border-success mb-3">
+                    <div class="card-header text-white bg-success">
+                        <!-- Título del chat con el nombre "Chat Online" -->
+                        <h4 class="card-title">Chat Online</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Información del usuario y tipo de cifrado del segundo chat -->
+                        <p class="card-text">Clave de {{nameUser}}: {{typeEncryption}}</p>
 
-                <div id="cifrados-container">
-                    <!-- Aquí se mostrarán los mensajes cifrados -->
-                </div>
-                <div id="descifrados-container">
-                    <!-- Aquí se mostrarán los mensajes descifrados -->
-                </div>
-                <form id="descifrar-form">
-                    <input type="text" class="form-control" id="clave-input" placeholder="Clave de descifrado">
-                    <button class="btn btn-info" type="button" id="button-addon2"
-                        onclick="descifrarMensajes()">Descifrar</button>
-                </form>
+                        <!-- Contenedores para mostrar mensajes cifrados y descifrados del segundo chat -->
+                        <div id="cifrados-container-2">
+                            <!-- Aquí se mostrarán los mensajes cifrados del segundo chat -->
+                        </div>
+                        <div id="descifrados-container-2">
+                            <!-- Aquí se mostrarán los mensajes descifrados del segundo chat -->
+                        </div>
 
+                        <!-- Entrada para descifrar mensajes y botón de descifrar del segundo chat -->
+                        <div class="input-group mb-3" id="descifrar-form-2">
+                            <input type="text" class="form-control" id="clave-input-2" aria-label="Recipient key"
+                                aria-describedby="button-addon3">
+                            <button class="btn btn-info" type="button" id="button-addon3"
+                                onclick="descifrarMensajes2()">Descifrar</button>
+                        </div>
+
+                        <!-- Entrada para enviar mensajes y botón de enviar del segundo chat -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="send-input-2" aria-label="Recipient's username"
+                                aria-describedby="button-addon4">
+                            <button class="btn btn-info" type="button" id="button-addon4"
+                                onclick="enviarMensaje2()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Biblioteca externa para la comunicación en tiempo real (socket.io) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
+        // Conexión al servidor de Socket.IO
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         function enviarMensaje() {
             var message = document.getElementById('send-input').value;
 
             if (message.trim() !== '') {
-                socket.emit('message', { 'message': message });
+                socket.emit('message', { 'message': message, 'chatNumber': 1 });
                 document.getElementById('send-input').value = ''; // Limpiar el campo después de enviar el mensaje
             }
         }
-        function descifrarMensajes() {
-            var mensajeCifrado = document.getElementById('cifrados-container').innerText; // Obtén el mensaje cifrado del contenedor
-            var claveDescifrado = document.getElementById('clave-input').value;
 
-            if (mensajeCifrado.trim() !== '' && claveDescifrado.trim() !== '') {
-                socket.emit('descifrar', { 'mensajeCifrado': mensajeCifrado, 'claveDescifrado': claveDescifrado });
+        // Función para enviar mensajes del segundo chat
+        function enviarMensaje2() {
+            var message = document.getElementById('send-input-2').value;
+
+            if (message.trim() !== '') {
+                socket.emit('message', { 'message': message, 'chatNumber': 2 });
+                document.getElementById('send-input-2').value = ''; // Limpiar el campo después de enviar el mensaje
             }
         }
 
+        // Función para descifrar mensajes
+        function descifrarMensajes1() {
+            var cifradosContainerId = 'cifrados-container-1';
+            var descifradosContainerId = 'descifrados-container-1';
+            var claveInputId = 'clave-input-1';
+
+            var mensajeCifrado = document.getElementById(cifradosContainerId).innerText; // Cambio aquí
+            var claveDescifrado = document.getElementById(claveInputId).value;
+
+            if (mensajeCifrado.trim() !== '' && claveDescifrado.trim() !== '') {
+                socket.emit('descifrar', { 'mensajeCifrado': mensajeCifrado, 'claveDescifrado': claveDescifrado, 'chatNumber': 1 });
+            }
+        }
+
+        // Función para descifrar mensajes del segundo chat
+        function descifrarMensajes2() {
+            var cifradosContainerId = 'cifrados-container-2';
+            var descifradosContainerId = 'descifrados-container-2';
+            var claveInputId = 'clave-input-2';
+
+            var mensajeCifrado = document.getElementById(cifradosContainerId).innerText; // Cambio aquí
+            var claveDescifrado = document.getElementById(claveInputId).value;
+
+            if (mensajeCifrado.trim() !== '' && claveDescifrado.trim() !== '') {
+                socket.emit('descifrar', { 'mensajeCifrado': mensajeCifrado, 'claveDescifrado': claveDescifrado, 'chatNumber': 2 });
+            }
+        }
+
+
         socket.on('message', function (data) {
-            var cifradosContainer = document.getElementById('cifrados-container');
+            var numeroChat = data.chatNumber;
+
+            var cifradosContainer = document.getElementById(`cifrados-container-${numeroChat}`);
             var cifradoElement = document.createElement('p');
             cifradoElement.innerText = data.cifrado;
             cifradosContainer.appendChild(cifradoElement);
         });
 
         socket.on('descifrado', function (data) {
-            var descifradosContainer = document.getElementById('descifrados-container');
+            var numeroChat = data.chatNumber;
+
+            var descifradosContainer = document.getElementById(`descifrados-container-${numeroChat}`);
             var descifradoElement = document.createElement('p');
             descifradoElement.innerText = data.descifrado;
             descifradosContainer.appendChild(descifradoElement);
         });
-
-        function obtenerMensajeDescifrado(mensaje) {
-            // Buscar la primera aparición de ': ' y tomar todo después de eso
-            var indexInicio = mensaje.indexOf(': ') + 2;
-            return mensaje.substring(indexInicio).trim();
-        }
     </script>
 </body>
 
