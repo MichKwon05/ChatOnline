@@ -27,7 +27,7 @@ def chatOnline():
     return render_template('chat.html', nameUser=nameUser, typeEncryption=typeEncryption)
 
 # En el servidor, en la función receive
-@socketio.on('message')
+@socketio.on('message') #manejar eventos
 def receive(data):
     nameUser = session.get('nameUser', 'Invitado')
     clave = int(session.get('typeEncryption', '0'))
